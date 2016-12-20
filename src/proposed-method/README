@@ -1,0 +1,223 @@
+=========================================================================
+=========================================================================
+
+                  Segmentation Of Bones From 3D-CT Images
+                   Marcel Krcah <marcel.krcah@gmail.com>
+                   
+                          Computer Vision Laboratory
+                                 ETH Zurich
+                                 Switzerland
+
+                                 2010-09-01
+
+                                Version: 1.0
+
+=========================================================================
+=========================================================================
+
+Intro:
+------
+
+This program automatically segments bones from 3D-CT images, i.e. 
+it classifies each voxel in the input image either as a bone voxel
+or a background-voxel. Background voxels are assigned value 0,
+bone-voxels are assigned values 1,2,3,... Different labels 
+correspond to different bones.
+
+Usage:
+------
+
+>./SegmentBoneFromCT input-CT-image temp-folder output-image
+
+input-CT-image - any file containing a normalized 3D-CT image
+  readable by ITK. In normalized CT image, voxel intensities
+  are directly the Haunsfield units, i.e. water is 0, bone
+  is 400 and higher, air is -1000. 
+
+temp-folder - folder where the program saves temporary results,
+  the folder must exist before calling the program
+
+output-image - file where the result will be saved. it should
+  be any format which ITK can recognise. 
+
+Typical example of usage:
+
+marcel$ ls
+00186-CT.nii             
+temp
+
+marcel$ SegmentBoneFromCT 00233-CT.nii temp output.nii
+ 0:00 [           Init] - Loading image 00186-CT.nii
+ 0:00 [  Preprocessing] - Thresholding input image
+ 0:01 [  Preprocessing] - Computing single-scale sheetness, sigma=1.50
+ 0:22 [  Preprocessing] - Mean norm = 5.63748
+ 0:24 [  Preprocessing] - Estimating soft-tissue voxels
+ 0:30 [  Preprocessing] - Estimating bone voxels
+ 0:32 [  Preprocessing] - Computing ROI from bone estimation using Chamfer Distance
+ 0:34 [  Preprocessing] - Chamfer Distance Forward sweep
+ 0:43 [  Preprocessing] - Chamfer Distance Backward sweep
+ 0:54 [  Preprocessing] - Unsharp masking
+ 1:12 [  Preprocessing] - Computing multiscale sheetness measure at 2 scales
+ 1:12 [  Preprocessing] - Computing single-scale sheetness, sigma=0.60
+ 1:34 [  Preprocessing] - Mean norm = 236.551
+ 1:36 [  Preprocessing] - Computing single-scale sheetness, sigma=0.80
+ 1:58 [  Preprocessing] - Mean norm = 156.713
+ 2:02 [    Disassembly] - Maximum available memory is 500 MB
+ 2:02 [    Disassembly] - Probing 1 block(s): Not enough, graph-cut expected memory consumption 1151 Mb
+ 2:02 [    Disassembly] - Probing 2 block(s): Not enough, graph-cut expected memory consumption 626 Mb
+ 2:02 [    Disassembly] - Probing 3 block(s): OK, graph-cut expected memory consumption 495 Mb
+ 2:04 [ Segmentation#1] - Building graph, 1758370 nodes                                           <--- If the program fails here
+ 2:10 [ Segmentation#1] - 5214663 t-links added                                                   <--- or here, increase available memory (see below)
+ 2:10 [ Segmentation#1] - Graph built. Computing the max flow
+ 2:12 [ Segmentation#1] - Max flow computed
+ 2:13 [ Segmentation#1] - Saving temporal result to temp/gc-output-part-0.nii
+ 2:14 [ Segmentation#2] - Building graph, 1207750 nodes
+ 2:19 [ Segmentation#2] - 3565873 t-links added
+ 2:19 [ Segmentation#2] - Graph built. Computing the max flow
+ 2:20 [ Segmentation#2] - Max flow computed
+ 2:20 [ Segmentation#2] - Saving temporal result to temp/gc-output-part-1.nii
+ 2:22 [ Segmentation#3] - Building graph, 2237930 nodes
+ 2:30 [ Segmentation#3] - 6636009 t-links added
+ 2:30 [ Segmentation#3] - Graph built. Computing the max flow
+ 2:36 [ Segmentation#3] - Max flow computed
+ 2:37 [ Segmentation#3] - Saving temporal result to temp/gc-output-part-2.nii
+ 2:37 [       Assembly] - Assembling temporal results
+ 2:40 [Bone Separation] - Computing Connected Components
+ 2:41 [Bone Separation] - Erosion + Connected Components, ball radius=3
+ 3:03 [Bone Separation] - Discovering main islands containg bottlenecks
+ 3:04 [Bone Separation] - Number of bottlenecks to be found: 0
+ 3:05 [         Saving] - Writing the result to output.nii
+
+Description of the output:
+	First column - elapsed times in format minutes:seconds
+	Second column - current stage 
+	Third column - detailed description of what's happenig
+
+Compilation:
+-------------
+
+The program (written in C++) relies on three libraries: 
+ITK, Boost and Graph-Cut.
+
+Sources for boost and graph-cut are shipped with the program 
+and therefore no external libraries are required. 
+
+Note: Because the whole Boost is quite large, a lot of 
+unnecessary code was deleted and so the size of the 
+whole project descresed from 50MB to 10MB. In case 
+some headers are missing during the compilation, download
+the boost1.44 and copy the missing headers. 
+
+The path to the ITK library needs to be supplied during
+the build process. The program is multi-platfrom, using
+cmake for building. 
+
+The cmake is very similar to the example cmake file used in 
+the ITK documentation. Follow the itk documentation
+to complete this step:
+http://www.itk.org/ItkSoftwareGuide.pdf, 
+ chapter 2 - Installation,
+ section 2.2.1 - Hello World
+
+Note: The program can be compiled for both x86 and x86_64 
+architectures. However, the memory requirement for
+the graph-cut segmentation are doubled when the program
+is compiled for 64bits. Compilation for 32bit is therefore
+recommended even on 64bit systems. 
+
+
+
+Directory structure:
+--------------------
+
+SegmentBoneFromCT/
+ README................................This file
+ src/..................................Source directory
+   external-libs-src/..................Third-party sources
+      boost_1_44_0/....................Subset of boost 
+                                       (www.boost.org)
+      maxflow-v3.01/...................Boykov-Kolmogorov max-flow min-cut 
+			               (http://vision.csd.uwo.ca/code/)
+   filters/
+      ChamferDistanceTransform.hpp.....Two-pass sweeping Chamfer distance transform
+      GraphCut.hpp.....................Abstract layer above the max-flow library to 
+                                       provide friendly interface for ITK
+      SheetnessMeasure.hpp.............Single-scale sheetness measure 
+                                       (Remi's implementation)
+   utils/..............................Abstract layer above ITK to ease writing code
+      FilterUtils.hpp..................Encapsulation of the most common itk filters
+      ImageUtils.hpp...................Encapsulation of the most common operations on one image
+   Main.cxx............................Main :)
+   01-Preprocessing.hpp................First stage of the segmentation pipeline 
+                                       (computing ROI, sheetness, etc)
+   02-Segmentation.hpp.................Segmentation of the image using graph-cut
+   03-AdjacentBoneSeparation.hpp.......Separation of bones which were not separated 
+                                       in the previous step
+   Globals.hpp.........................Just common typedefs and logging
+   ImageSplitter.hpp...................Class used to compute how to divide the
+                                       image into smaller pieces 
+   CMakeLists.txt......................build configuration file for cmake
+
+
+
+
+
+Implementation notes:
+---------------------
+
+The main three abstract modules are located in files 01-Preprocessing.hpp, 
+02-Segmentation.hpp and 03-AdjacentBoneSeparation.hpp. Their "abstractness"
+is due to the following:
+ - they don't care about input/ouput
+ - they rarely operate directly with ITK, rather with the abstract ITK 
+   layer provided by ImageUtils and FitlerUtils
+The source main.cxx takes care of I/O and calls these three modules.
+
+Due to the usage of boost, one can sometimes spot on-the-first-sight-unreadable
+code. See the following links if you feel uncomfortable:
+- http://www.boost.org/doc/libs/1_44_0/libs/tuple/doc/tuple_users_guide.html
+- http://www.boost.org/doc/libs/1_44_0/libs/format/doc/format.html
+- src/Globals.hpp/class MyLog
+
+The procedures and functions throughout the project
+should in general have no side-effects and modifies
+at most the input parameters. The only exception to this rule is 
+the filters/GraphCut.hpp, where the private member function
+occasionaly changes member variables. There should be also
+no hidden secret global variables which are changed somewhere
+deep deep throughout the code. 
+
+
+Maximum available memory:
+-------------------------
+
+The file src/Globals.hpp defines the variable AVAILABLE_MEMORY_IN_MB.
+The value should be an estimation of the maximum memory available
+for the graph-cut segmentation (stage 2).
+
+After the input image is pre-processed, the image is split into several
+parts in such a way, that there will be enough memory for segmentation
+by graph-cut for each of these parts. Current value is 2GB which
+should be fairly enough for the CT datasets of 10-15 millions of voxels
+(even in case of 64bit architectures). The rational behind this 
+value is the following: Once the program fails in the [Segmentation]
+phase during building the graph or it doesn't fail but the operating
+system starts to swap, descrese the AVAILABLE_MEMORY_IN_MB such that
+the segmentation will be performed per partes and therefore will consume
+less memory. 
+
+In case of any question, suggestion or ideas, please, don't hesitate
+and contact me via email: marcel.krcah@gmail.com
+
+
+Happy segmenting!
+
+
+
+
+
+
+
+
+
+
