@@ -1,3 +1,4 @@
+**THIS REPO IS NOT MAINTAINED. IF YOU FIND AN ISSUE, PLEASE CREATE A PULL REQUEST SO OTHERS CAN BENEFIT FROM THE FIX.**
 
 Source code behind the paper [Fully automatic and fast segmentation of the femur bone](http://ieeexplore.ieee.org/document/5872823/), 
 presented in [ISBI Conference](http://biomedicalimaging.org/) in 2011. 
