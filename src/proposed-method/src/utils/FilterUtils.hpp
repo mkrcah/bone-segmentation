@@ -81,7 +81,6 @@ class FilterUtils {
     typedef typename MaskNegatedImageFilterType::Pointer MaskNegatedImageFilterPointer;
     typedef typename SubtractFilterType::Pointer SubtractFilterPointer;
     typedef typename AddFilterType::Pointer AddFilterPointer;
-    typedef typename ConnectedComponentImageFilterType::Pointer ConnectedComponentImageFilterPointer;
     typedef typename RelabelComponentImageFilterType::Pointer RelabelComponentImageFilterPointer;
     typedef typename ShiftScaleImageFilterType::Pointer ShiftScaleImageFilterPointer;
     typedef typename DiscreteGaussianImageFilterType::Pointer DiscreteGaussianImageFilterPointer;
@@ -371,6 +370,7 @@ public:
 
     // compute connected components of a (binary image)
     static OutputImagePointer connectedComponents(InputImagePointer image) {
+        typedef typename ConnectedComponentImageFilterType::Pointer ConnectedComponentImageFilterPointer;
 
         ConnectedComponentImageFilterPointer filter =
             ConnectedComponentImageFilterType::New();
