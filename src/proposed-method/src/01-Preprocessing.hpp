@@ -103,7 +103,7 @@ FloatImagePtr chamferDistance(UCharImagePtr image) {
 Input: Normalized CT image, scales for the sheetness measure
 Output: (ROI, MultiScaleSheetness, SoftTissueEstimation)
 */
-tuple<UCharImagePtr, FloatImagePtr, UCharImagePtr>
+boost::tuples::tuple<UCharImagePtr, FloatImagePtr, UCharImagePtr>
 compute(
     ShortImagePtr inputCT,
     float sigmaSmallScale,
@@ -174,7 +174,7 @@ compute(
     sheetness = multiscaleSheetness(inputCTUnsharpMasked, sigmasLargeScale, roi);
 
 
-    return make_tuple(roi,sheetness, softTissueEstimation);
+    return boost::tuples::make_tuple(roi,sheetness, softTissueEstimation);
 }
 
 
