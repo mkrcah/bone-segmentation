@@ -1,6 +1,6 @@
 /*=========================================================================
 
-    Author:  Rémi Blanc <blanc@vision.ee.ethz.ch>
+    Author:  RÃ©mi Blanc <blanc@vision.ee.ethz.ch>
              Computer Vision Laboratory
              ETH Zurich
              Switzerland
@@ -15,7 +15,6 @@
 
 
 #include "itkImage.h"
-#include "itkOrientedImage.h"
 
 #include "itkImageRegionIterator.h"
 #include "itkImportImageFilter.h"
