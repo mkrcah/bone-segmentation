@@ -13,7 +13,7 @@ IF(ITK_FOUND)
 ELSE(ITK_FOUND)
 	MESSAGE(FATAL_ERROR "ITK not found. Please set ITK_DIR.")
 ENDIF(ITK_FOUND)
-set(ITK_LIBS ITKCommon ITKIO)
+set(ITK_LIBS ${ITK_LIBRARIES})
 
 
 # Compilation of maxflow library
