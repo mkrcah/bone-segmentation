@@ -302,7 +302,7 @@ vector<pair<Label, Label> > getSubIslandsPairsForSeparation(
         ) {
 
             Label subIsland = subIslandsSortedBySize[mainIdx];
-            log("Computing distace from sub-island %d") % subIsland;
+            logger("Computing distace from sub-island %d") % subIsland;
 
             FloatImagePtr distance =
                 FilterUtils<UIntImage,FloatImage>::distanceMapByFastMarcher(
@@ -450,11 +450,11 @@ UCharImagePtr compute(UCharImagePtr inputBinary) {
     unsigned EROSION_RADIUS = 3;
     unsigned MAX_DISTANCE_FOR_ADJACENT_BONES = 15;
 
-    log("Computing Connected Components");
+    logger("Computing Connected Components");
     UIntImagePtr mainIslands =
         FilterUtils<UCharImage,UIntImage>::connectedComponents(inputBinary);
 
-    log("Erosion + Connected Components, ball radius=%d") % EROSION_RADIUS;
+    logger("Erosion + Connected Components, ball radius=%d") % EROSION_RADIUS;
     UIntImagePtr subIslands =
         FilterUtils<UCharImage,UIntImage>::connectedComponents(
             FilterUtils<UCharImage>::erosion(inputBinary, EROSION_RADIUS)
@@ -468,7 +468,7 @@ UCharImagePtr compute(UCharImagePtr inputBinary) {
     and between 13 and 12 -> three bottlenecks altogether. Clearly,
     the subislands 5 and 2 must lie within the same main island.
     */
-    log("Discovering main islands containg bottlenecks");
+    logger("Discovering main islands containg bottlenecks");
     IslandStats stats = countSizeOfIslands(mainIslands, subIslands);
     markIslandsToProcess(stats);
     vector<pair<unsigned, unsigned> > subIslandsPairs =
@@ -479,7 +479,7 @@ UCharImagePtr compute(UCharImagePtr inputBinary) {
     UIntImagePtr result = ImageUtils<UIntImage>::duplicate(mainIslands);
 
 
-    log("Number of bottlenecks to be found: %d") % subIslandsPairs.size();
+    logger("Number of bottlenecks to be found: %d") % subIslandsPairs.size();
 
     /*
     Let's find the bottlenecks using simplified graph-cut
@@ -492,7 +492,7 @@ UCharImagePtr compute(UCharImagePtr inputBinary) {
         Label mainLabel = findLabelOfMainIsland(mainIslands, subIslands, i1);
         assert(mainLabel == findLabelOfMainIsland(mainIslands, subIslands, i2));
 
-        log("Identifying bottleneck between sub-islands %d and %d within main island %d")
+        logger("Identifying bottleneck between sub-islands %d and %d within main island %d")
             % i1 % i2 % mainLabel;
 
         // for the graph-cut we need to supply roi and the cost function

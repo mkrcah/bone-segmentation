@@ -270,7 +270,7 @@ void MemoryEfficientObjectnessFilter::GenerateObjectnessImage()
 	}
 	mean_norm /= (float)pixelsInRoi;
 
-    log("Mean norm = %1%") % mean_norm;
+    logger("Mean norm = %1%") % mean_norm;
 
 	for (int k=0 ; k<d ; k++)
 	{

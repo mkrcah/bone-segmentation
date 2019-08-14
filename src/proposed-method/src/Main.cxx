@@ -106,7 +106,7 @@ int main(int argc, char * argv [])
 
     {
         logSetStage("Init");
-        log("Loading image %s") % filenames.input();
+        logger("Loading image %s") % filenames.input();
         ShortImagePtr inputCT = ImageUtils<ShortImage>::readImage(filenames.input());
 
         logSetStage("Preprocessing");
@@ -166,14 +166,14 @@ int main(int argc, char * argv [])
             inputCT, roi, sheetness, softTissueEst);
 
         // save the result
-        log("Saving temporal result to %s") % filenames.segmOutputPart(i);
+        logger("Saving temporal result to %s") % filenames.segmOutputPart(i);
         ImageUtils<UCharImage>::writeImage(filenames.segmOutputPart(i), gcResult);
 
     }
 
 
     logSetStage("Assembly");
-    log("Assembling temporal results");
+    logger("Assembling temporal results");
 
     UCharImagePtr assembledResult = FilterUtils<UCharImage>::createEmptyFrom(
         ImageUtils<UCharImage>::readImage(filenames.roi()));
@@ -203,7 +203,7 @@ int main(int argc, char * argv [])
 	//-----------------------------------
 
     logSetStage("Saving");
-    log("Writing the result to %s") % filenames.output();
+    logger("Writing the result to %s") % filenames.output();
 
     ImageUtils<UCharImage>::writeImage(filenames.output(), finalResult);
 
