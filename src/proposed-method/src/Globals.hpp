@@ -18,7 +18,7 @@
 
 #pragma once
 
-#define AVAILABLE_MEMORY_IN_MB  200
+#define AVAILABLE_MEMORY_IN_MB  2000
 
 
 #include "itkImage.h"
