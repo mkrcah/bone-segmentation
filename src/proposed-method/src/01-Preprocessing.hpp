@@ -34,8 +34,9 @@ using namespace boost;
 // if roi is specified, than compute the measure only for pixels within ROI
 // (i.e. pixels where roi(pixel) >= 1)
 FloatImagePtr multiscaleSheetness(
-    FloatImagePtr img, vector<float> scales, UCharImagePtr roi = 0
-) {
+				  FloatImagePtr img,
+				  vector<float> scales,
+				  UCharImagePtr roi ) {
 
     assert(scales.size() >= 1);
 
@@ -43,7 +44,7 @@ FloatImagePtr multiscaleSheetness(
 
     for (unsigned i = 0; i < scales.size(); ++i) {
 
-        log("Computing single-scale sheetness, sigma=%4.2f") % scales[i];
+        logger("Computing single-scale sheetness, sigma=%4.2f") % scales[i];
 
         MemoryEfficientObjectnessFilter *sheetnessFilter =
             new MemoryEfficientObjectnessFilter();
@@ -115,7 +116,7 @@ compute(
     FloatImagePtr sheetness;
 
     {
-        log("Thresholding input image");
+        logger("Thresholding input image");
         ShortImagePtr thresholdedInputCT =
             FilterUtils<ShortImage>::thresholding(
                 ImageUtils<ShortImage>::duplicate(inputCT),
@@ -126,10 +127,11 @@ compute(
         FloatImagePtr smallScaleSheetnessImage =
             multiscaleSheetness(
                 FilterUtils<ShortImage,FloatImage>::cast(thresholdedInputCT),
-                scales
+                scales,
+		roi
             );
 
-        log("Estimating soft-tissue voxels");
+        logger("Estimating soft-tissue voxels");
         softTissueEstimation =  FilterUtils<UIntImage,UCharImage>::binaryThresholding(
                 FilterUtils<UIntImage>::relabelComponents(
                     FilterUtils<UCharImage, UIntImage>::connectedComponents(
@@ -139,7 +141,7 @@ compute(
                 1,1
             );
 
-        log("Estimating bone voxels");
+        logger("Estimating bone voxels");
         UCharImagePtr boneEstimation =
             FilterUtils<ShortImage,UCharImage>::createEmptyFrom(inputCT);
         itk::ImageRegionIteratorWithIndex<ShortImage>
@@ -153,12 +155,12 @@ compute(
             boneEstimation->SetPixel(it.GetIndex(), bone ? 1 : 0);
         }
 
-        log("Computing ROI from bone estimation using Chamfer Distance");
+        logger("Computing ROI from bone estimation using Chamfer Distance");
         roi = FilterUtils<FloatImage,UCharImage>::binaryThresholding(
             chamferDistance(boneEstimation),0, 30);
     }
 
-    log("Unsharp masking");
+    logger("Unsharp masking");
     FloatImagePtr inputCTUnsharpMasked =
         FilterUtils<FloatImage>::add(
             FilterUtils<ShortImage,FloatImage>::cast(inputCT),
@@ -169,7 +171,7 @@ compute(
                 10.0, 0.0)
         );
 
-    log("Computing multiscale sheetness measure at %d scales")
+    logger("Computing multiscale sheetness measure at %d scales")
         % sigmasLargeScale.size();
     sheetness = multiscaleSheetness(inputCTUnsharpMasked, sigmasLargeScale, roi);
 

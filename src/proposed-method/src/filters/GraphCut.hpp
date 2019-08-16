@@ -255,7 +255,7 @@ private:
     ) {
         assignIdsToPixels(labelImage);
 
-        log("Building graph, %d nodes") % _totalPixelsInROI;
+        logger("Building graph, %d nodes") % _totalPixelsInROI;
 
         _gc = new GraphType(_totalPixelsInROI, 3 * _totalPixelsInROI);
         _gc->add_node(_totalPixelsInROI);
@@ -263,7 +263,7 @@ private:
         initializeDataCosts(dataCostFunction);
 
         initializeNeighbours(smoothnessCostFunction);
-        log("%d t-links added") % _totalNeighbors;
+        logger("%d t-links added") % _totalNeighbors;
 
 //#if LOG_GRAPH_CUT_DETAILS == 1
 //        logger.log("Segm - Graph nodes", _totalPixelsInROI);
@@ -284,9 +284,9 @@ private:
 
         assert(_gc != NULL);
 
-        log("Graph built. Computing the max flow");
+        logger("Graph built. Computing the max flow");
         _gc->maxflow();
-        log("Max flow computed");
+        logger("Max flow computed");
         updateLabelImageAccordingToGraph();
 
         // Ende :)

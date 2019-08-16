@@ -158,7 +158,7 @@ private:
         unsigned memoryNeededKb;
         vector<SliceSet> sliceSets;
 
-        log("Maximum available memory is %d MB") % AVAILABLE_MEMORY_IN_MB;
+        logger("Maximum available memory is %d MB") % AVAILABLE_MEMORY_IN_MB;
 
 
         while (!enoughRAMforEachBlock && blocks < MAX_BLOCKS) {
@@ -183,7 +183,7 @@ private:
 
             enoughRAMforEachBlock = (memoryNeededKb < availableMemoryKb);
 
-            log("Probing %1% block(s): %2%, graph-cut expected memory consumption %3% Mb")
+            logger("Probing %1% block(s): %2%, graph-cut expected memory consumption %3% Mb")
                 % blocks
                 % (enoughRAMforEachBlock ? "OK" : "Not enough")
                 % (memoryNeededKb / 1024);

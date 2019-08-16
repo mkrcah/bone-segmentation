@@ -244,7 +244,7 @@ private:
 public:
 
     // constructor
-    ChamferDistanceTransform() : _propagationImage(NULL)
+    ChamferDistanceTransform() : _propagationImage(nullptr)
     {}
 
     void setPropagationImage(PropagationImagePointer p) {
@@ -296,10 +296,10 @@ public:
         // compute the template for the given distance transfortm type
         ChamferTemplate chamferTemplate = getForwardTemplate(type);
 
-        log("Chamfer Distance Forward sweep");
+        logger("Chamfer Distance Forward sweep");
         forwardSweep(distanceMap, chamferTemplate);
 
-        log("Chamfer Distance Backward sweep");
+        logger("Chamfer Distance Backward sweep");
         backwardSweep(distanceMap, chamferTemplate);
 
         // done :)

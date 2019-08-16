@@ -46,11 +46,7 @@ typedef UCharImage::SizeType ImageSize;
 typedef UCharImage::IndexType ImageIndex;
 typedef UCharImage::RegionType ImageRegion;
 
-
-
-
-
-#define log mylog << boost::format
+#define logger mylog << boost::format
 #define logSetStage(stage) mylog.setStage(stage)
 
 class MyLog {
@@ -79,4 +75,3 @@ public:
 
 };
 MyLog mylog;
-
